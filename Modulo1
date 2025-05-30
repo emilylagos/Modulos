@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Web </title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .jumbotron {
+            background: linear-gradient(135deg, var(--primary-color), #2c3e50);
+            padding: 6rem 2rem;
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .jumbotron::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/api/placeholder/1920/400') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .jumbotron * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .producto {
+            border: none;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: #fff;
+            margin-bottom: 30px;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .producto:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .producto h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #357abd;
+            transform: scale(1.05);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .características-item {
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .características-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        footer {
+            background: linear-gradient(to right, #2c3e50, #3498db);
+            color: white;
+            padding: 40px 0;
+            margin-top: 100px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: var(--accent-color);
+            transform: scale(1.2);
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .jumbotron {
+                padding: 4rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="jumbotron text-center text-white animate__animated animate__fadeIn">
+        <h1 class="display-4 fw-bold">Bienvenido a nuestro Proyecto</h1>
+        <p class="lead">Un sitio web moderno y responsive</p>
+        <button class="btn btn-light btn-lg mt-3">Descubre más</button>
+    </header>
+    
+    <main class="container mt-5">
+        <section class="animate__animated animate__fadeInUp">
+            <h2 class="text-center mb-5">Características del Producto</h2>
+            <div class="row text-center">
+                <div class="col-md-4 mb-4">
+                    <div class="características-item">
+                        <div class="feature-icon">✨</div>
+                        <p>Alta calidad y durabilidad</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="características-item">
+                        <div class="feature-icon">🎨</div>
+                        <p>Diseño moderno y atractivo</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="características-item">
+                        <div class="feature-icon">🔄</div>
+                        <p>Compatible con múltiples plataformas</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="mt-5 animate__animated animate__fadeInUp">
+            <h2 class="text-center mb-5">Nuestros Productos</h2>
+            <div class="row d-flex justify-content-center" id="productos-container">
+                <!-- Los productos se cargarán dinámicamente con JavaScript -->
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+                <div>
+                    <address>
+                        📍 Calle Principal #123, Ciudad, País
+                    </address>
+                </div>
+                <div>
+                    <p>© 2024 Proyecto Web</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="scroll-to-top">↑</div>
+
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    
+    <script>
+        // Datos de productos
+        const productos = [
+            {
+                titulo: "Producto Premium",
+                descripcion: "Una solución innovadora para tus necesidades.",
+                precio: "$99.99"
+            },
+            {
+                titulo: "Producto Estándar",
+                descripcion: "Calidad excepcional a un precio accesible.",
+                precio: "$49.99"
+            },
+            {
+                titulo: "Producto Básico",
+                descripcion: "La opción perfecta para comenzar.",
+                precio: "$29.99"
+            }
+        ];
+
+        // Cargar productos dinámicamente
+        function cargarProductos() {
+            const container = document.getElementById('productos-container');
+            productos.forEach(producto => {
+                const productoHTML = `
+                    <div class="col-md-4 mb-4">
+                        <div class="producto text-center">
+                            <h3>${producto.titulo}</h3>
+                            <p>${producto.descripcion}</p>
+                            <p class="precio fw-bold">${producto.precio}</p>
+                            <button class="btn btn-primary ver-mas">Ver más</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += productoHTML;
+            });
+        }
+
+        // Botón scroll to top
+        window.onscroll = function() {
+            const scrollButton = document.querySelector('.scroll-to-top');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                scrollButton.classList.add('visible');
+            } else {
+                scrollButton.classList.remove('visible');
+            }
+        };
+
+        document.querySelector('.scroll-to-top').addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Animaciones al hacer scroll
+        function checkScroll() {
+            const elements = document.querySelectorAll('.animate__animated');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    element.style.visibility = 'visible';
+                    element.classList.add('animate__fadeInUp');
+                }
+            });
+        }
+
+        // Eventos al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarProductos();
+            checkScroll();
+            
+            // Agregar interactividad a los botones
+            document.querySelectorAll('.ver-mas').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const producto = e.target.closest('.producto');
+                    producto.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        producto.style.transform = 'scale(1)';
+                    }, 200);
+                });
+            });
+        });
+
+        // Evento scroll para animaciones
+        window.addEventListener('scroll', checkScroll);
+    </script>
+</body>
+</html>
