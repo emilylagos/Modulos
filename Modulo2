@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Sitio Web</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css">
+    <style>
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .content {
+            margin-top: 70px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Mi Tienda</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content container mt-5">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Productos</li>
+            </ol>
+        </nav>
+
+        <!-- Banner -->
+        <div class="mb-4">
+            <img src="banner.jpg" class="img-fluid" alt="Promoción">
+        </div>
+
+        <!-- Productos en Cards -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="producto1.jpg" class="card-img-top" alt="Producto 1">
+                    <div class="card-body">
+                        <h5 class="card-title">Producto 1</h5>
+                        <p class="card-text">Descripción del producto.</p>
+                    </div>
+                    <div class="card-footer">$10.00</div>
+                </div>
+            </div>
+            <!-- Agrega más productos aquí -->
+        </div>
+
+        <!-- Tabla con Scroll -->
+        <div class="table-container mt-4">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Ítem</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Producto A</td>
+                        <td>$10.00</td>
+                        <td><span class="oi oi-pencil"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulario -->
+        <form class="mt-4">
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email">
+            </div>
+            <div class="mb-3">
+                <label for="opcion" class="form-label">Selecciona una opción</label>
+                <select class="form-select" id="opcion">
+                    <option>Suscripción</option>
+                    <option>Comentario</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input"> Acepto los términos
+                </label>
+            </div>
+            <div class="mb-3">
+                <label for="mensaje" class="form-label">Mensaje</label>
+                <textarea class="form-control" id="mensaje"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
