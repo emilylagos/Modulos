@@ -1,0 +1,80 @@
+// index.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal con Bootstrap y jQuery</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <button id="modalBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Abrir Modal</button>
+        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Título del Modal</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">Contenido del modal...</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
+
+// js/scripts.js
+$(document).ready(function() {
+    var modal = $('#myModal');
+    var modalBtn = $('#modalBtn');
+    
+    modal.on('show.bs.modal', function() {
+        console.log('El modal está por abrirse');
+        modalBtn.prop('disabled', true).css('background-color', 'gray');
+    });
+    
+    modal.on('shown.bs.modal', function() {
+        console.log('El modal se ha abierto');
+    });
+    
+    modal.on('hide.bs.modal', function() {
+        console.log('El modal está por cerrarse');
+    });
+    
+    modal.on('hidden.bs.modal', function() {
+        console.log('El modal se ha cerrado');
+        modalBtn.prop('disabled', false).css('background-color', '');
+    });
+});
+
+// scss/styles.scss
+$color-amarillo: yellow;
+$color-rojo: red;
+$color-verde: green;
+
+@mixin box-styles($margen, $padding, $bg-color) {
+    margin: $margen;
+    padding: $padding;
+    background-color: $bg-color;
+}
+
+.btn {
+    @include box-styles(10px, 15px, $color-verde);
+}
+
+// package.json
+{
+  "scripts": {
+    "scss": "node-sass -o css/ scss/"
+  }
+}
