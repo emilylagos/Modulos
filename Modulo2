@@ -1,121 +1,168 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Sitio Web</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css">
-    <style>
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        .content {
-            margin-top: 70px;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-    </style>
-</head>
-<body>
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">Mi Tienda</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+// app.module.ts (todo el proyecto en uno solo)
+import { NgModule, Component, EventEmitter, Output } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
+import { StoreModule, Action, createReducer, on } from '@ngrx/store';
+import { createAction, props, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 
-    <div class="content container mt-5">
-        <!-- Breadcrumbs -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Productos</li>
-            </ol>
-        </nav>
+// ------------------ ACTIONS ------------------
+export const agregarItem = createAction('[Items] Agregar', props<{ item: string }>());
+export const borrarItem = createAction('[Items] Borrar', props<{ index: number }>());
+export const votarAFavor = createAction('[Items] Votar AFavor', props<{ index: number }>());
+export const votarEnContra = createAction('[Items] Votar EnContra', props<{ index: number }>());
 
-        <!-- Banner -->
-        <div class="mb-4">
-            <img src="banner.jpg" class="img-fluid" alt="Promoción">
-        </div>
+// ------------------ REDUCER ------------------
+export interface Item {
+  nombre: string;
+  votos: number;
+}
 
-        <!-- Productos en Cards -->
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="producto1.jpg" class="card-img-top" alt="Producto 1">
-                    <div class="card-body">
-                        <h5 class="card-title">Producto 1</h5>
-                        <p class="card-text">Descripción del producto.</p>
-                    </div>
-                    <div class="card-footer">$10.00</div>
-                </div>
-            </div>
-            <!-- Agrega más productos aquí -->
-        </div>
+export const initialState: Item[] = [
+  { nombre: 'Elemento 1', votos: 0 },
+  { nombre: 'Elemento 2', votos: 0 }
+];
 
-        <!-- Tabla con Scroll -->
-        <div class="table-container mt-4">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Ítem</th>
-                        <th>Descripción</th>
-                        <th>Precio</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Producto A</td>
-                        <td>$10.00</td>
-                        <td><span class="oi oi-pencil"></span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+export const itemsReducer = createReducer(
+  initialState,
+  on(agregarItem, (state, { item }) => [...state, { nombre: item, votos: 0 }]),
+  on(borrarItem, (state, { index }) => state.filter((_, i) => i !== index)),
+  on(votarAFavor, (state, { index }) =>
+    state.map((el, i) => i === index ? { ...el, votos: el.votos + 1 } : el)
+  ),
+  on(votarEnContra, (state, { index }) =>
+    state.map((el, i) => i === index ? { ...el, votos: el.votos - 1 } : el)
+  )
+);
 
-        <!-- Formulario -->
-        <form class="mt-4">
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email">
-            </div>
-            <div class="mb-3">
-                <label for="opcion" class="form-label">Selecciona una opción</label>
-                <select class="form-select" id="opcion">
-                    <option>Suscripción</option>
-                    <option>Comentario</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input"> Acepto los términos
-                </label>
-            </div>
-            <div class="mb-3">
-                <label for="mensaje" class="form-label">Mensaje</label>
-                <textarea class="form-control" id="mensaje"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>
-    </div>
+// ------------------ COMPONENTES ------------------
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+// APP
+@Component({
+  selector: 'app-root',
+  template: `
+    <h1>Proyecto Angular</h1>
+    <router-outlet></router-outlet>
+  `
+})
+export class AppComponent { }
+
+// PADRE
+@Component({
+  selector: 'app-padre',
+  template: `
+    <h2>Componente Padre</h2>
+    <app-hijo-form (formularioEnviado)="onFormularioEnviado($event)"></app-hijo-form>
+    <app-votos></app-votos>
+  `
+})
+export class PadreComponent {
+  onFormularioEnviado(data: any) {
+    console.log('Padre recibió del hijo:', data);
+  }
+}
+
+// HIJO
+@Component({
+  selector: 'app-hijo-form',
+  template: `
+    <h3>Formulario del Hijo</h3>
+    <form [formGroup]="form" (ngSubmit)="enviar()">
+      <label>Nombre:</label>
+      <input type="text" formControlName="nombre">
+      <div *ngIf="nombre?.hasError('required')">El nombre es requerido</div>
+
+      <label>Edad:</label>
+      <input type="text" formControlName="edad">
+      <div *ngIf="edad?.hasError('required')">La edad es requerida</div>
+      <div *ngIf="edad?.hasError('edadInvalida')">
+        La edad debe ser mayor o igual a {{edad?.getError('edadInvalida')?.min}}
+      </div>
+
+      <button type="submit">Enviar</button>
+    </form>
+  `
+})
+export class HijoFormComponent {
+  @Output() formularioEnviado = new EventEmitter<any>();
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      nombre: ['', [Validators.required]],
+      edad: ['', [Validators.required, this.validarEdad(18)]]
+    });
+  }
+
+  validarEdad(min: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      return value && value < min ? { edadInvalida: { min } } : null;
+    };
+  }
+
+  enviar() {
+    if (this.form.valid) {
+      this.formularioEnviado.emit(this.form.value);
+    }
+  }
+
+  get nombre() { return this.form.get('nombre'); }
+  get edad() { return this.form.get('edad'); }
+}
+
+// VOTOS
+@Component({
+  selector: 'app-votos',
+  template: `
+    <h3>Listado con votos</h3>
+    <ul>
+      <li *ngFor="let item of (items$ | async); let i = index">
+        {{item.nombre}} - Votos: {{item.votos}}
+        <button (click)="upvote(i)">👍</button>
+        <button (click)="downvote(i)">👎</button>
+      </li>
+    </ul>
+  `
+})
+export class VotosComponent {
+  items$: Observable<Item[]>;
+
+  constructor(private store: Store<{ items: Item[] }>) {
+    this.items$ = this.store.select('items');
+  }
+
+  upvote(index: number) {
+    this.store.dispatch(votarAFavor({ index }));
+  }
+
+  downvote(index: number) {
+    this.store.dispatch(votarEnContra({ index }));
+  }
+}
+
+// ------------------ RUTAS ------------------
+const routes: Routes = [
+  { path: '', redirectTo: 'padre', pathMatch: 'full' },
+  { path: 'padre', component: PadreComponent }
+];
+
+// ------------------ MÓDULO ------------------
+@NgModule({
+  declarations: [
+    AppComponent,
+    PadreComponent,
+    HijoFormComponent,
+    VotosComponent
+  ],
+  imports: [
+    BrowserModule,
+    ReactiveFormsModule,
+    RouterModule.forRoot(routes),
+    StoreModule.forRoot({ items: itemsReducer })
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
