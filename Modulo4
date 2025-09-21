@@ -1,79 +1,133 @@
-// index.html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modal con Bootstrap y jQuery</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <button id="modalBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Abrir Modal</button>
-        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">Título del Modal</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">Contenido del modal...</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/scripts.js"></script>
-</body>
-</html>
+// ======================================
+// Proyecto Angular Todo-en-Uno
+// ======================================
+import { NgModule, Component, Directive, ElementRef, HostListener, Injectable } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoreModule, createAction, createReducer, on, props, Store } from '@ngrx/store';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Observable } from 'rxjs';
 
-// js/scripts.js
-$(document).ready(function() {
-    var modal = $('#myModal');
-    var modalBtn = $('#modalBtn');
-    
-    modal.on('show.bs.modal', function() {
-        console.log('El modal está por abrirse');
-        modalBtn.prop('disabled', true).css('background-color', 'gray');
-    });
-    
-    modal.on('shown.bs.modal', function() {
-        console.log('El modal se ha abierto');
-    });
-    
-    modal.on('hide.bs.modal', function() {
-        console.log('El modal está por cerrarse');
-    });
-    
-    modal.on('hidden.bs.modal', function() {
-        console.log('El modal se ha cerrado');
-        modalBtn.prop('disabled', false).css('background-color', '');
-    });
+// ----------------- REDUX -----------------
+export interface TrackingState { [tag: string]: number; }
+export const initialTracking: TrackingState = {};
+export const trackClick = createAction('[Tracking] Click', props<{ tag: string }>());
+export const trackingReducer = createReducer(
+  initialTracking,
+  on(trackClick, (state, { tag }) => ({
+    ...state,
+    [tag]: (state[tag] || 0) + 1
+  }))
+);
+
+// ----------------- DIRECTIVA -----------------
+@Directive({ selector: '[appTrackClick]' })
+export class TrackClickDirective {
+  constructor(private el: ElementRef, private store: Store<{ tracking: TrackingState }>) {}
+  @HostListener('click', ['$event'])
+  handleClick(event: Event) {
+    const tag = this.el.nativeElement.getAttribute('data-tag') || 'unknown';
+    this.store.dispatch(trackClick({ tag }));
+  }
+}
+
+// ----------------- COMPONENTE APP -----------------
+@Component({
+  selector: 'app-root',
+  template: `
+<h1>Demo Tracking & Mapbox</h1>
+<app-map appTrackClick data-tag="mapa"></app-map>
+<app-animado appTrackClick data-tag="animado"></app-animado>
+<div *ngFor="let key of trackingKeys">
+  {{key}}: {{tracking[key]}}
+</div>
+`
+})
+export class AppComponent {
+  trackingKeys: string[] = [];
+  tracking: TrackingState = {};
+  constructor(private store: Store<{ tracking: TrackingState }>) {
+    this.store.select('tracking').subscribe(t => { this.tracking = t; this.trackingKeys = Object.keys(t); });
+  }
+}
+
+// ----------------- COMPONENTE MAPA -----------------
+@Component({
+  selector: 'app-map',
+  template: `<div id="map" style="height:300px;background:#ddd;">Mapa</div>`
+})
+export class MapComponent {
+  ngOnInit() {
+    // Simula marker con click
+    const mapDiv = document.getElementById('map');
+    mapDiv?.addEventListener('click', () => alert('Marker clicked!'));
+  }
+}
+
+// ----------------- COMPONENTE ANIMADO -----------------
+@Component({
+  selector: 'app-animado',
+  template: `<div [@cambio]="estado" (click)="toggle()">Click me</div>`,
+  animations: [
+    trigger('cambio', [
+      state('activo', style({ transform: 'scale(1.5)', backgroundColor: 'yellow' })),
+      state('inactivo', style({ transform: 'scale(1)', backgroundColor: 'lightblue' })),
+      transition('inactivo <=> activo', animate('300ms ease-in-out'))
+    ])
+  ]
+})
+export class AnimadoComponent {
+  estado = 'inactivo';
+  toggle() { this.estado = this.estado === 'inactivo' ? 'activo' : 'inactivo'; }
+}
+
+// ----------------- MÓDULO -----------------
+@NgModule({
+  declarations: [AppComponent, MapComponent, AnimadoComponent, TrackClickDirective],
+  imports: [BrowserModule, BrowserAnimationsModule, StoreModule.forRoot({ tracking: trackingReducer })],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+
+// ----------------- PRUEBAS UNITARIAS JASMINE -----------------
+describe('Tracking Reducer', () => {
+  it('debe incrementar contador para un tag', () => {
+    const state = trackingReducer(initialTracking, trackClick({ tag: 'test' }));
+    if (state['test'] !== 1) throw new Error('Error en tracking reducer');
+  });
 });
 
-// scss/styles.scss
-$color-amarillo: yellow;
-$color-rojo: red;
-$color-verde: green;
+// ----------------- TESTS CYPRESS (conceptual) -----------------
+// Archivo: cypress/integration/app_spec.js
+/*
+describe('Pruebas de app', () => {
+  it('Visitar app', () => { cy.visit('http://localhost:4200'); });
+  it('Click en mapa', () => { cy.get('#map').click(); });
+  it('Click en animado', () => { cy.get('app-animado div').click(); });
+});
+*/
 
-@mixin box-styles($margen, $padding, $bg-color) {
-    margin: $margen;
-    padding: $padding;
-    background-color: $bg-color;
-}
+// ----------------- CONFIGURATION CIRCLECI -----------------
+/*
+# .circleci/config.yml
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: cimg/node:18.17
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run build
+      - run: npm run test -- --watch=false
+      - run: npx cypress run
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+*/
 
-.btn {
-    @include box-styles(10px, 15px, $color-verde);
-}
-
-// package.json
-{
   "scripts": {
     "scss": "node-sass -o css/ scss/"
   }
